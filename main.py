@@ -1,13 +1,18 @@
 import re
-
 import requests
+from urllib.parse import quote
 from bs4 import BeautifulSoup
-
 import execjs
 
 '''
 ============================================    研究生管理系统一键健康打卡    =======================================================
 '''
+# --------------------------------  请关闭VPN或者其他网络代理软件后使用，以免出现奇怪的问题！！！ ------------------------------------------
+# ------------------  请在此处设置你的智慧青科大账号和密码   ------------------------
+# 用户名
+un = '4021110075'
+# 密码
+pd = '1934109821@zXX'
 
 # 登录页面
 login_url = 'http://ipass.qust.edu.cn/tpass/login?service=http%3A%2F%2Fgms.qust.edu.cn%2Flogin%2FssoLogin'
@@ -18,17 +23,15 @@ headers = {
     'Connection': 'close'
 }
 main_page_resp = requests.get(login_url, headers=headers)
-print(main_page_resp.status_code)
+# print(main_page_resp.status_code)
+if main_page_resp.status_code == 200:
+    print('解析登录页面成功！')
 
 # 下次请求需要带着上次响应返回的 cookie
 cookies = [x for x in re.split(';|,| ', main_page_resp.headers.get('Set-Cookie').strip("'")) if x != '']
 # cookie 实际上只需要 JSESSIONID 和 Language 就行了
 jl_cookie = '; '.join(sorted([c for c in cookies if 'Language' in c or 'JSESSIONID' in c]))
 
-# 用户名
-un = '4021110075'
-# 密码
-pd = '1934109821@zXX'
 ul = str(len(un))
 pl = str(len(pd))
 execution = 'e1s1'
@@ -36,14 +39,12 @@ _eventId = 'submit'
 # 解析登录页面，找到用于登录时提交的参数lt
 soup = BeautifulSoup(main_page_resp.text, "html.parser")
 lt = soup.find_all('input', {'id': 'lt'})[0].get('value')
-print(lt)
 
 # 编码用于登录时提交的参数rsa
 # 读取、编译js文件
 ctx = execjs.compile(open('EncodeDecode.js', encoding="utf-8").read())
 # 执行js函数，call（函数名，参数1，参数2，...）
 rsa = ctx.call('strEnc', un + pd + lt, "1", "2", "3")
-print(rsa)
 
 
 # 获取post提交数据时候的Content-Length的函数
@@ -63,7 +64,6 @@ data = {
     'execution': execution,
     '_eventId': _eventId
 }
-
 headers = {
     'Host': 'ipass.qust.edu.cn',
     'Content-Length': str(get_content_length(data)),
@@ -79,13 +79,15 @@ headers = {
     'Cookie': jl_cookie,
     'Connection': 'close'
 }
-print(headers)
+# print(headers)
 
 # 发送登录请求
 resp = requests.post(login_url, headers=headers, data=data, allow_redirects=False)
-print(resp.status_code)
-print(resp.headers)
-print(resp.headers.get("Location"))
+# print(resp.status_code)
+# print(resp.headers)
+if resp.status_code == 302:
+    print('开始登录！')
+    print('重定向到：', resp.headers.get("Location"))
 
 # 登录过程会重定向多次，分别请求解析
 headers = {
@@ -97,9 +99,10 @@ headers = {
     'Connection': 'close'
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-print(resp.status_code)
-print(resp.headers)
-print(resp.headers.get("Location"))
+# print(resp.status_code)
+# print(resp.headers)
+if resp.status_code == 302:
+    print('重定向到：', resp.headers.get("Location"))
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
@@ -114,9 +117,10 @@ headers = {
     'Connection': 'close'
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-print(resp.status_code)
-print(resp.headers)
-print(resp.headers.get("Location"))
+# print(resp.status_code)
+# print(resp.headers)
+if resp.status_code == 302:
+    print('重定向到：', resp.headers.get("Location"))
 
 cookies = [x for x in re.split(';|,| ', resp.headers.get('Set-Cookie').strip("'")) if x != '']
 j_cookie = '; '.join([c for c in cookies if 'JSESSIONID' in c])
@@ -128,11 +132,11 @@ headers = {
     'Referer': 'http://ipass.qust.edu.cn/',
     'Cookie': j_cookie
 }
-print(headers)
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-print(resp.status_code)
-print(resp.headers)
-print(resp.headers.get("Location"))
+# print(resp.status_code)
+# print(resp.headers)
+if resp.status_code == 302:
+    print('重定向到：', resp.headers.get("Location"))
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
@@ -147,11 +151,14 @@ headers = {
     'Referer': 'http://ipass.qust.edu.cn/'
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-print(resp.status_code)
-print(resp.headers.get("Location"))
+# print(resp.status_code)
+if resp.status_code == 302:
+    print('重定向到：', resp.headers.get("Location"))
 
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-print(resp.status_code)
+# print(resp.status_code)
+if resp.status_code == 200:
+    print('登录成功！')
 
 # 第一级收集表外壳框架
 mycoll_url = 'https://gms.qust.edu.cn/efm/collection/enterListMyCollection?categoryId=mrjkdk'
@@ -161,15 +168,14 @@ data = {'token': jsessionid_val}
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
     'Host': 'gms.qust.edu.cn',
-    'Cookie': j_cookie
-              + '; https%3A%2F%2Fgms.qust.edu.cn%2F=%7B%22admHistory%22%3A%7B%224021110075%22%3A%5B%7B%22url%22%3A%22login%2FenterMain%2Fgrzxgl%2FenterGrzx%22%2C%22name%22%3A%22%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83%22%7D%5D%7D%7D',
+    'Cookie': j_cookie,
     'Content-Length': str(get_content_length(data)),
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
     'Sec-Fetch-Site': 'same-origin',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Dest': 'empty',
-    'Referer': 'https://gms.qust.edu.cn/login/enterMain/efm/collection/enterListMyCollection?categoryId=mrjkdk',
+    'Referer': 'https://gms.qust.edu.cn/login/enterMain/efm/collection/enterListMyCollection?categoryId=mrjkdk'
 }
 resp = requests.post(mycoll_url, headers=headers, data=data)
 print(resp.status_code)
@@ -186,7 +192,7 @@ print(parent_data_id)
 
 if parent_data_id:
     # 第二级收集表
-    list_url = 'https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/' + parent_data_id
+    list_url = 'https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/' + quote(parent_data_id, 'utf-8')
     resp = requests.post(list_url, headers=headers, data=data)
     print(resp.status_code)
     soup = BeautifulSoup(resp.text, "html.parser")
@@ -196,27 +202,39 @@ if parent_data_id:
 
     if child_data_id:
         # 要填写的收集表
-        coll_url = 'https://gms.qust.edu.cn/efm/collection/enterAddCollectionData/' + child_data_id
+        coll_url = 'https://gms.qust.edu.cn/efm/collection/enterAddCollectionData/' + quote(child_data_id, 'utf-8')
         resp = requests.post(list_url, headers=headers, data=data)
         print(resp.status_code)
 
         # 收集表提交地址
         submit_url = 'https://gms.qust.edu.cn/efm/collection/submitCollectionData'
-        # 提交数据
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
+            'Host': 'gms.qust.edu.cn',
+            'Cookie': j_cookie,
+            'Cache-Control': 'max-age=0',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Referer': 'https://gms.qust.edu.cn/login/enterMain/efm/collection/enterListMyCollection?categoryId=mrjkdk',
+            'Content - Type': 'application / json'
+        }
+        # ----------------- 提交数据，固定格式请勿乱动！！！ ---------------------
         data = {
             "id": None,
             "collectId": parent_data_id,
             "data": {
-                "szd": "370212",
-                "tw": "37.2℃及以下",
-                "stzk": "健康",
-                "zgfxq": "否",
-                "mj": "否",
-                "ysbl": "否",
-                "yxgl": "否",
-                "jkmys": "绿色",
-                "cn": "是",
-                "szd_text": "山东 - 青岛市 - 崂山区",
+                "szd": "370212",  # 所在地。。崂山区370212，至于其他城市有时间再添加详细注释
+                "tw": "37.2℃及以下",  # 体温。。仅可自行修改为：37.2℃及以下、37.3℃-37.9℃、38℃及以上
+                "stzk": "健康",  # 身体状况。。仅可自行修改为：健康、发烧、干咳、乏力、其他
+                "zgfxq": "否",  # 近14天你或你的共同居住人是否有疫情中、高风险区域人员接触史。。仅可自行修改为：是、否
+                "mj": "否",  # 近14天你或你的共同居住人是否和确诊、疑似病人接触过。。仅可自行修改为：是、否
+                "ysbl": "否",  # 近14天你或你的共同居住人是否是确诊、疑似病例。。仅可自行修改为：是、否
+                "yxgl": "否",  # 你和你的共同居住人目前是否被医学隔离。。仅可自行修改为：是、否
+                "jkmys": "绿色",  # 今天你当地的健康码颜色是。。仅可自行修改为：绿色、黄色、红色
+                "cn": "是",  # 本人是否承诺以上所填报内容属实、准确，不存在任何隐瞒与不实情况，更无遗漏之处。。仅可自行修改为：是、否
+                "szd_text": "山东 - 青岛市 - 崂山区",  # 所在地全称：山东 - 青岛市 - 崂山区，以下数据信息同上
                 "tw_text": "37.2℃及以下",
                 "stzk_text": "健康",
                 "zgfxq_text": "否",
@@ -228,15 +246,42 @@ if parent_data_id:
             },
             "collectChildId": child_data_id
         }
-        # 提交收集表
-        resp = requests.post(submit_url, headers=headers, data=data)
-        print(resp.status_code)
-        if resp.status_code == '200':
+        # 提交收集表, 需要提交 json 类型数据
+        resp = requests.post(submit_url, headers=headers, json=data)
+        # print(resp.status_code)
+        # print(resp.text)
+        if resp.status_code == 200:
             print("打卡成功！")
         else:
-            print("打卡失败，出现了一点点小问题！")
+            print("打卡失败，出现了一点点小问题！等会再试一次？如果一直有问题就自己去手动打卡吧！")
+    else:
+        print('没有解析到需要填写的打卡！')
+else:
+    print('没有解析到需要填写的打卡信息收集！')
 
 # 退出登录
 logout_url = 'https://gms.qust.edu.cn/login/signout'
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
+    'Host': 'gms.qust.edu.cn',
+    'Cookie': j_cookie,
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Dest': 'document',
+    'Referer': 'https://gms.qust.edu.cn/login/enterMain/'
+}
 resp = requests.get(logout_url, headers=headers, allow_redirects=False)
-print(resp.status_code)
+# print(resp.status_code)
+# print(resp.headers)
+resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
+    'Host': 'gms.qust.edu.cn',
+    'Upgrade-Insecure-Requests': '1',
+    'Connection': 'close'
+}
+# print(resp.status_code)
+# print(resp.headers)
+if resp.status_code == 302:
+    print('退出登录完成！')
