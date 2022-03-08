@@ -7,8 +7,7 @@ import execjs
 '''
 ============================================    研究生管理系统一键健康打卡    =======================================================
 '''
-# --------------------------------  请关闭VPN或者其他网络代理软件后使用，以免出现奇怪的问题！！！ ------------------------------------------
-# ------------------  请在此处设置你的智慧青科大账号和密码   ------------------------
+# ------------------  只需要在此处设置你的智慧青科大账号和密码即可   ------------------------
 # 用户名
 un = '4021110075'
 # 密码
@@ -178,27 +177,27 @@ headers = {
     'Referer': 'https://gms.qust.edu.cn/login/enterMain/efm/collection/enterListMyCollection?categoryId=mrjkdk'
 }
 resp = requests.post(mycoll_url, headers=headers, data=data)
-print(resp.status_code)
+# print(resp.status_code)
 
 # 第一级收集表内容
 todo_url = 'https://gms.qust.edu.cn/efm/collection/enterListTodoCollection?categoryId=mrjkdk'
 resp = requests.post(todo_url, headers=headers, data=data)
-print(resp.status_code)
+# print(resp.status_code)
 # print(resp.text)
 soup = BeautifulSoup(resp.text, "html.parser")
 # 第一级收集表id
 parent_data_id = soup.find('a', text='填写').get('data-id')
-print(parent_data_id)
+# print(parent_data_id)
 
 if parent_data_id:
     # 第二级收集表
     list_url = 'https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/' + quote(parent_data_id, 'utf-8')
     resp = requests.post(list_url, headers=headers, data=data)
-    print(resp.status_code)
+    # print(resp.status_code)
     soup = BeautifulSoup(resp.text, "html.parser")
     # 第二级收集表id
     child_data_id = soup.find('a', text='填写').get('data-id')
-    print(child_data_id)
+    # print(child_data_id)
 
     if child_data_id:
         # 要填写的收集表
