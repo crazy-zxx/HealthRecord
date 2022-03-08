@@ -203,7 +203,7 @@ if parent_data_id:
         # 要填写的收集表
         coll_url = 'https://gms.qust.edu.cn/efm/collection/enterAddCollectionData/' + quote(child_data_id, 'utf-8')
         resp = requests.post(list_url, headers=headers, data=data)
-        print(resp.status_code)
+        # print(resp.status_code)
 
         # 收集表提交地址
         submit_url = 'https://gms.qust.edu.cn/efm/collection/submitCollectionData'
