@@ -1,0 +1,9 @@
+#安装依赖包：pip install -r requirements.txt
+requests
+certifi
+urllib3
+pyOpenSSL
+beautifulsoup4
+PyExecJS
+
+
