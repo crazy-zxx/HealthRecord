@@ -22,7 +22,6 @@ headers = {
     'Connection': 'close'
 }
 main_page_resp = requests.get(login_url, headers=headers)
-# print(main_page_resp.status_code)
 if main_page_resp.status_code == 200:
     print('解析登录页面成功！')
 
@@ -39,7 +38,7 @@ _eventId = 'submit'
 soup = BeautifulSoup(main_page_resp.text, "html.parser")
 lt = soup.find_all('input', {'id': 'lt'})[0].get('value')
 
-# 编码用于登录时提交的参数rsa
+# 编码用于登录时提交的参数rsa。其实就是对登录的用户账号信息进行了加密
 # 读取、编译js文件
 ctx = execjs.compile(open('EncodeDecode.js', encoding="utf-8").read())
 # 执行js函数，call（函数名，参数1，参数2，...）
@@ -78,12 +77,9 @@ headers = {
     'Cookie': jl_cookie,
     'Connection': 'close'
 }
-# print(headers)
 
 # 发送登录请求
 resp = requests.post(login_url, headers=headers, data=data, allow_redirects=False)
-# print(resp.status_code)
-# print(resp.headers)
 if resp.status_code == 302:
     print('开始登录！')
     print('重定向到：', resp.headers.get("Location"))
@@ -98,8 +94,6 @@ headers = {
     'Connection': 'close'
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-# print(resp.status_code)
-# print(resp.headers)
 if resp.status_code == 302:
     print('重定向到：', resp.headers.get("Location"))
 
@@ -116,8 +110,6 @@ headers = {
     'Connection': 'close'
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-# print(resp.status_code)
-# print(resp.headers)
 if resp.status_code == 302:
     print('重定向到：', resp.headers.get("Location"))
 
@@ -132,8 +124,6 @@ headers = {
     'Cookie': j_cookie
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-# print(resp.status_code)
-# print(resp.headers)
 if resp.status_code == 302:
     print('重定向到：', resp.headers.get("Location"))
 
@@ -150,16 +140,14 @@ headers = {
     'Referer': 'http://ipass.qust.edu.cn/'
 }
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-# print(resp.status_code)
 if resp.status_code == 302:
     print('重定向到：', resp.headers.get("Location"))
 
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-# print(resp.status_code)
 if resp.status_code == 200:
     print('登录成功！')
 
-print('正在打卡...学校网站慢，请耐心等待！')
+print('正在打卡...学校网站慢，请耐心等待，可能需要10-20s左右！')
 
 # 第一级收集表外壳框架
 mycoll_url = 'https://gms.qust.edu.cn/efm/collection/enterListMyCollection?categoryId=mrjkdk'
@@ -179,33 +167,26 @@ headers = {
     'Referer': 'https://gms.qust.edu.cn/login/enterMain/efm/collection/enterListMyCollection?categoryId=mrjkdk'
 }
 resp = requests.post(mycoll_url, headers=headers, data=data)
-# print(resp.status_code)
 
 # 第一级收集表内容
 todo_url = 'https://gms.qust.edu.cn/efm/collection/enterListTodoCollection?categoryId=mrjkdk'
 resp = requests.post(todo_url, headers=headers, data=data)
-# print(resp.status_code)
-# print(resp.text)
 soup = BeautifulSoup(resp.text, "html.parser")
 # 第一级收集表id
 parent_data_id = soup.find('a', text='填写').get('data-id')
-# print(parent_data_id)
 
 if parent_data_id:
     # 第二级收集表
     list_url = 'https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/' + quote(parent_data_id, 'utf-8')
     resp = requests.post(list_url, headers=headers, data=data)
-    # print(resp.status_code)
     soup = BeautifulSoup(resp.text, "html.parser")
     # 第二级收集表id
     child_data_id = soup.find('a', text='填写').get('data-id')
-    # print(child_data_id)
 
     if child_data_id:
         # 要填写的收集表
         coll_url = 'https://gms.qust.edu.cn/efm/collection/enterAddCollectionData/' + quote(child_data_id, 'utf-8')
         resp = requests.post(list_url, headers=headers, data=data)
-        # print(resp.status_code)
 
         # 收集表提交地址
         submit_url = 'https://gms.qust.edu.cn/efm/collection/submitCollectionData'
@@ -221,12 +202,12 @@ if parent_data_id:
             'Referer': 'https://gms.qust.edu.cn/login/enterMain/efm/collection/enterListMyCollection?categoryId=mrjkdk',
             'Content - Type': 'application / json'
         }
-        # ----------------- 提交数据，固定格式请勿乱动！！！ ---------------------
+        # ---------------------  提交数据，固定格式请勿乱动！！！ ---------------------
         data = {
             "id": None,
             "collectId": parent_data_id,
             "data": {
-                "szd": "370212",  # 所在地。。崂山区370212，至于其他城市有时间再添加详细注释
+                "szd": "370212",  # 所在地。。崂山区370212，至于其他城市有时间再添加
                 "tw": "37.2℃及以下",  # 体温。。仅可自行修改为：37.2℃及以下、37.3℃-37.9℃、38℃及以上
                 "stzk": "健康",  # 身体状况。。仅可自行修改为：健康、发烧、干咳、乏力、其他
                 "zgfxq": "否",  # 近14天你或你的共同居住人是否有疫情中、高风险区域人员接触史。。仅可自行修改为：是、否
@@ -247,10 +228,8 @@ if parent_data_id:
             },
             "collectChildId": child_data_id
         }
-        # 提交收集表, 需要提交 json 类型数据
+        # 提交收集表, 此处需要提交 json 类型数据
         resp = requests.post(submit_url, headers=headers, json=data)
-        # print(resp.status_code)
-        # print(resp.text)
         if resp.status_code == 200:
             print("打卡成功！")
         else:
@@ -273,16 +252,6 @@ headers = {
     'Referer': 'https://gms.qust.edu.cn/login/enterMain/'
 }
 resp = requests.get(logout_url, headers=headers, allow_redirects=False)
-# print(resp.status_code)
-# print(resp.headers)
 resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirects=False)
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
-    'Host': 'gms.qust.edu.cn',
-    'Upgrade-Insecure-Requests': '1',
-    'Connection': 'close'
-}
-# print(resp.status_code)
-# print(resp.headers)
 if resp.status_code == 302:
     print('退出登录完成！')
