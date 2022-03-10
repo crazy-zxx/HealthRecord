@@ -147,7 +147,7 @@ resp = requests.get(resp.headers.get("Location"), headers=headers, allow_redirec
 if resp.status_code == 200:
     print('登录成功！')
 
-print('正在打卡...学校网站慢，请耐心等待，可能需要10-20s左右！')
+print('正在打卡...学校网站慢，请耐心等待，可能需要1分钟左右！')
 
 # 第一级收集表外壳框架
 mycoll_url = 'https://gms.qust.edu.cn/efm/collection/enterListMyCollection?categoryId=mrjkdk'
