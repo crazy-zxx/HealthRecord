@@ -13,7 +13,7 @@ import execjs
 # 用户名
 un = '4021110075'
 # 密码
-pd = '12345678qwer'
+pd = '12345678'
 
 # 登录页面
 login_url = 'http://ipass.qust.edu.cn/tpass/login?service=http%3A%2F%2Fgms.qust.edu.cn%2Flogin%2FssoLogin'
@@ -174,18 +174,22 @@ resp = requests.post(mycoll_url, headers=headers, data=data)
 todo_url = 'https://gms.qust.edu.cn/efm/collection/enterListTodoCollection?categoryId=mrjkdk'
 resp = requests.post(todo_url, headers=headers, data=data)
 soup = BeautifulSoup(resp.text, "html.parser")
-# 第一级收集表id
-parent_data_id = soup.find('a', text='填写').get('data-id')
+# 第一级收集表
+parent_coll = soup.find('a', text='填写')
 
-if parent_data_id:
+if parent_coll:
+    # 第一级收集表id
+    parent_data_id = parent_coll.get('data-id')
     # 第二级收集表
     list_url = 'https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/' + quote(parent_data_id, 'utf-8')
     resp = requests.post(list_url, headers=headers, data=data)
     soup = BeautifulSoup(resp.text, "html.parser")
-    # 第二级收集表id
-    child_data_id = soup.find('a', text='填写').get('data-id')
+    # 第二级收集表
+    child_coll = soup.find('a', text='填写')
 
-    if child_data_id:
+    if child_coll:
+        # 第二级收集表id
+        child_data_id = child_coll.get('data-id')
         # 要填写的收集表
         coll_url = 'https://gms.qust.edu.cn/efm/collection/enterAddCollectionData/' + quote(child_data_id, 'utf-8')
         resp = requests.post(list_url, headers=headers, data=data)
@@ -240,6 +244,7 @@ if parent_data_id:
         print('没有解析到需要填写的打卡！')
 else:
     print('没有解析到需要填写的打卡信息收集！')
+
 
 # 退出登录
 logout_url = 'https://gms.qust.edu.cn/login/signout'
