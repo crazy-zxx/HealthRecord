@@ -9,6 +9,7 @@ git clone https://github.com/crazy-zxx/HealthRecord.git
 ### 使用
 
 #### 环境搭建
+
 ```
 # 创建虚拟环境
 conda create --name healthRecord
@@ -19,6 +20,7 @@ pip install -r requirements.txt
 ```
 
 #### 配置
+
 ```
 # 进入目录，直接下载的解压后文件夹名字可能是HealthRecord-master
 cd HealthRecord
@@ -31,20 +33,47 @@ un = '4021110075'
 # 密码
 pd = '12345678qwer'
 ```
+
 #### 运行
+
 然后运行该脚本即可
 ```
 python3 main.py
 ```
-#### 打卡成功
-Pycharm yyds
 
+#### 打卡成功
+
+Pycharm yyds
 ![](example.png)
+
+### 打卡自动化
+
+#### Windows通过计划任务实现
+
+1.新建一个bat脚本，用于执行python脚本
+```
+%切换到代码所在目录%
+cd C:\Users\zhao\PycharmProjects\HealthRecord
+%切换到conda的虚拟环境，文件位置自己按需修改%
+call C:\Users\zhao\miniconda3\Scripts\activate.bat C:\Users\zhao\miniconda3\envs\healthRecord
+%执行脚本%
+python main.py
+%在执行完py后显示结果的命令行界面暂停，便于查看结果%
+pause
+```
+2.添加任务
+![](autoImage/1.png)
+![](autoImage/2.png)
+![](autoImage/3.png)
+![](autoImage/4.png)
+![](autoImage/5.png)
+![](autoImage/6.png)
+![](autoImage/7.png)
+
 
 ### 注意
 
 默认打卡地点为崂山区，以后会更新其他地区
-
 ```
 # ---------------------  提交数据，固定格式请勿乱动！！！ ---------------------
 data = {
