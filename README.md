@@ -38,7 +38,7 @@ pd = '12345678qwer'
 
 然后运行该脚本即可
 ```
-python3 main.py
+python main.py
 ```
 
 #### 打卡成功
