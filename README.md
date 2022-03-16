@@ -48,7 +48,7 @@ python main.py
 
 ### 打卡自动化
 
-#### Windows通过计划任务实现
+#### Windows本机通过计划任务实现
 
 1.新建一个bat脚本，用于执行python脚本
 ```
@@ -71,6 +71,12 @@ pause
 ![](autoImage/6.png)
 ![](autoImage/7.png)
 
+<br>
+
+#### 腾讯云服务器版（有邮箱通知）
+[智慧青科大健康打卡腾讯云版](https://github.com/crazy-zxx/HealthRecordCloud)
+
+<br>
 
 ### 注意
 
