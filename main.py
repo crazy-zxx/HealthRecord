@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
 import re
 import requests
 from urllib.parse import quote
@@ -13,7 +16,7 @@ import execjs
 # 用户名
 un = '4021110075'
 # 密码
-pd = '12345678'
+pd = '1934109821@zXX'
 
 # 登录页面
 login_url = 'http://ipass.qust.edu.cn/tpass/login?service=http%3A%2F%2Fgms.qust.edu.cn%2Flogin%2FssoLogin'
