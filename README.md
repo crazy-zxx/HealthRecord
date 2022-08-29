@@ -75,7 +75,7 @@ pause
 
 #### Linux通过crontab实现
 
-1.Node.js 安装（js登录加密登录时会依赖此环境）
+1.Node.js 安装（js加密登录时会依赖此环境）
 
 ```
 # CentOS
