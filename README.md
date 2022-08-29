@@ -73,7 +73,27 @@ pause
 
 <br>
 
-#### 腾讯云服务器版（有邮箱通知）
+#### Linux通过crontab实现
+
+用crontab -e进入当前用户的工作表编辑
+
+```
+crontab的命令构成为 时间+动作，其时间有分、时、日、月、周五种，操作符有：
+* 取值范围内的所有数字
+/ 每过多少个数字
+- 从X到Z
+，散列数字
+```
+
+```
+# 在 crontab -e 工作表的最后添加一行即可：
+#分 时 日 月 周 要执行的命令（执行脚本文件要使用绝对路径）
+20 8,9 * * * /usr/bin/python3 /root/HealthRecordCloud/index.py > /root/HealthRecordCloud/record.log
+```
+
+<br>
+
+#### 腾讯云服务器版（有邮箱通知。腾讯云函数已经开始收费！！！建议自建服务器打卡！！！）
 [智慧青科大健康打卡腾讯云版](https://github.com/crazy-zxx/HealthRecordCloud)
 
 <br>
