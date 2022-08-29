@@ -75,7 +75,17 @@ pause
 
 #### Linux通过crontab实现
 
-用crontab -e进入当前用户的工作表编辑
+1.Node.js 安装（js登录加密登录时会依赖此环境）
+
+```
+# CentOS
+yum install epel-release 
+yum install nodejs
+# Ubuntu
+sudo apt-get install nodejs
+```
+
+2.用crontab -e进入当前用户的工作表编辑
 
 ```
 crontab的命令构成为 时间+动作，其时间有分、时、日、月、周五种，操作符有：
